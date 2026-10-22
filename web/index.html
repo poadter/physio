@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>กายภาพ AI</title>
+  <meta name="description" content="ฝึกกายภาพบำบัดที่บ้านด้วย AI นับครั้ง แนะนำท่า แจ้งเตือนญาติ" />
+  <meta name="theme-color" content="#0e6b66" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <div id="demoBanner" class="demo-banner" hidden>โหมดทดลอง — ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์ (ข้อมูลเก็บในเครื่องนี้เท่านั้น)</div>
+  <main class="wrap stack">
+    <div class="center" style="padding-top:28px">
+      <img src="icons/icon-192.png" alt="" width="96" height="96" style="border-radius:24px" />
+      <h1 id="appName" style="margin-top:12px">กายภาพ AI</h1>
+      <p class="muted" id="orgName"></p>
+    </div>
+
+    <div id="checking" class="card center" hidden>กำลังตรวจสอบรหัส…</div>
+
+    <!-- โหมดทดลอง -->
+    <section id="demoBox" class="stack" hidden>
+      <div class="card stack">
+        <h2>ทดลองใช้ได้ทันที</h2>
+        <p class="muted">ฝึกท่า นับครั้ง และฟังเสียงแนะนำได้เลย ส่วนการบันทึกขึ้นระบบ หน้าจัดการ และ LINE แจ้งญาติ ต้องตั้งค่าเซิร์ฟเวอร์ก่อน (ดูคู่มือติดตั้ง)</p>
+        <a class="btn primary xl block" href="home.html">เริ่มทดลองใช้</a>
+      </div>
+    </section>
+
+    <!-- ลงทะเบียนเครื่องผู้ฝึก -->
+    <section id="pairBox" class="stack" hidden>
+      <div class="card stack">
+        <h2>ลงทะเบียนเครื่องนี้</h2>
+        <p class="muted">ขอ QR Code จากนักกายภาพ แล้วกดปุ่มด้านล่างเพื่อสแกน</p>
+        <button class="btn primary xl block" id="scanBtn">📷 สแกน QR Code</button>
+        <div id="scanArea" hidden>
+          <div class="stage" style="aspect-ratio:1/1"><video id="scanVideo" playsinline muted></video></div>
+          <button class="btn ghost block" id="scanCancel" style="margin-top:10px">ยกเลิก</button>
+        </div>
+        <details>
+          <summary class="muted" style="cursor:pointer;padding:8px 0">หรือพิมพ์รหัสเอง</summary>
+          <div class="stack" style="margin-top:8px">
+            <div class="field"><label for="pid">รหัสผู้ฝึก</label><input id="pid" placeholder="เช่น P0001" autocapitalize="characters" /></div>
+            <div class="field"><label for="ptoken">รหัสลับ 8 ตัว</label><input id="ptoken" placeholder="เช่น K7M2Q9XA" autocapitalize="characters" /></div>
+            <button class="btn primary block" id="manualBtn">ลงทะเบียน</button>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <a class="btn ghost block" href="admin.html">👩‍⚕️ สำหรับนักกายภาพ / เจ้าหน้าที่</a>
+  </main>
+  <script type="module" src="js/index.js"></script>
+</body>
+</html>
