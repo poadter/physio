@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>นักกายภาพ — กายภาพ AI</title>
+  <meta name="theme-color" content="#0e6b66" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <style>:root { font-size: 17px; }</style>
+  <script src="config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="icons/icon-192.png" alt="" /><span>สำหรับนักกายภาพ</span></div>
+    <button class="btn ghost sm" id="logoutBtn" hidden>ออกจากระบบ</button>
+  </header>
+  <div id="demoBanner" class="demo-banner" hidden>โหมดทดลอง — ยังไม่ได้เชื่อมต่อเซิร์ฟเวอร์ ใช้ได้เฉพาะ "ทดลองท่า"</div>
+
+  <main class="wrap wide">
+    <section id="login" class="card stack" style="max-width:420px;margin:40px auto" hidden>
+      <h2>เข้าสู่ระบบ</h2>
+      <div class="field"><label for="pin">รหัส PIN</label><input id="pin" type="password" inputmode="numeric" autocomplete="current-password" /></div>
+      <button class="btn primary block" id="loginBtn">เข้าสู่ระบบ</button>
+      <a class="muted small center" href="index.html">‹ กลับหน้าแรก</a>
+    </section>
+
+    <section id="app" hidden>
+      <nav class="tabs" id="tabs">
+        <button class="btn sm" data-tab="patients">👥 ผู้ฝึก</button>
+        <button class="btn sm" data-tab="alerts">🔔 แจ้งเตือน <span id="alertCount"></span></button>
+        <button class="btn sm" data-tab="test">🧪 ทดลองท่า</button>
+        <button class="btn sm" data-tab="system">⚙️ สถานะระบบ</button>
+      </nav>
+      <div id="view"></div>
+    </section>
+  </main>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>

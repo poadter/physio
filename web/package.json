@@ -1,0 +1,6 @@
+{
+  "name": "physio-ai",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node tests/engine.test.mjs && node tests/coach.test.mjs && node tests/backend.test.mjs" }
+}

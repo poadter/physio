@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>เชื่อมต่อรับแจ้งเตือน — กายภาพ AI</title>
+  <meta name="theme-color" content="#0e6b66" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="config.js"></script>
+  <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+  <main class="wrap stack" style="padding-top:28px">
+    <div class="center">
+      <img src="icons/icon-192.png" alt="" width="80" height="80" style="border-radius:20px" />
+      <h1 style="margin-top:10px">รับแจ้งเตือนผ่าน LINE</h1>
+    </div>
+    <div class="card stack" id="box"><p class="center muted">กำลังโหลด…</p></div>
+  </main>
+
+  <script type="module">
+    import { $, esc } from "./js/ui.js";
+    const CFG = window.APP_CONFIG;
+    const box = $("#box");
+    const RELATIONS = ["ลูก", "หลาน", "คู่สมรส", "พี่น้อง", "ผู้ดูแล", "เจ้าหน้าที่/อสม.", "อื่น ๆ"];
+
+    async function call(action, data) {
+      const r = await fetch(CFG.API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ action, ...data }),
+      }).then((x) => x.json());
+      if (!r.ok) throw new Error(r.error);
+      return r.data;
+    }
+    const fail = (msg) => (box.innerHTML = `<h2>❌ ไม่สำเร็จ</h2><p>${esc(msg)}</p><p class="muted">ให้ผู้สูงอายุกด "เชื่อมต่อญาติ" ในแอปอีกครั้ง แล้วสแกน QR ใหม่</p>`);
+
+    // รหัสอาจมาทาง ?code= หรือซ่อนใน liff.state
+    function getCode() {
+      const q = new URLSearchParams(location.search);
+      if (q.get("code")) return q.get("code");
+      const st = q.get("liff.state");
+      if (st) return new URLSearchParams(st.replace(/^[^?]*\?/, "")).get("code");
+      return sessionStorage.getItem("linkCode");
+    }
+
+    (async () => {
+      if (!CFG.API_URL) return fail("ระบบยังไม่ได้ตั้งค่าเซิร์ฟเวอร์ (API_URL ใน config.js)");
+      const code0 = getCode();
+      if (code0) sessionStorage.setItem("linkCode", code0);
+      let cfg;
+      try { cfg = await call("public.config", {}); } catch (e) { return fail("เชื่อมต่อเซิร์ฟเวอร์ไม่ได้: " + e.message); }
+      if (!cfg.liffId) return fail("ยังไม่ได้ตั้งค่า LIFF_ID ในเซิร์ฟเวอร์");
+      try {
+        await liff.init({ liffId: cfg.liffId });
+      } catch (e) {
+        return fail("เปิด LINE ไม่สำเร็จ: " + e.message);
+      }
+      if (!liff.isLoggedIn()) return liff.login({ redirectUri: location.href });
+      const code = getCode();
+      if (!code) return fail("ไม่พบรหัสเชื่อมต่อ");
+
+      let preview;
+      try { preview = await call("family.preview", { code }); } catch (e) { return fail(e.message); }
+      let me = {};
+      try { me = await liff.getProfile(); } catch {}
+
+      box.innerHTML = `
+        <p class="center">คุณ <b>${esc(me.displayName || "")}</b> กำลังขอรับแจ้งเตือนของ</p>
+        <h2 class="center">คุณ${esc(preview.patientName)}</h2>
+        <label for="rel">คุณเป็นอะไรกับผู้ฝึก?</label>
+        <select id="rel">${RELATIONS.map((r) => `<option>${r}</option>`).join("")}</select>
+        <div class="note">คุณจะได้รับ LINE เมื่อ: ตรวจพบการล้ม · กดขอความช่วยเหลือ · แจ้งว่าเจ็บมาก · ไม่ได้ฝึกหลายวัน · ผลการฝึกลดลงผิดปกติ</div>
+        <button class="btn primary xl block" id="go">ยืนยัน</button>`;
+
+      $("#go").onclick = async () => {
+        $("#go").disabled = true;
+        $("#go").textContent = "กำลังส่ง…";
+        try {
+          const r = await call("family.link", { code, idToken: liff.getIDToken(), relation: $("#rel").value });
+          sessionStorage.removeItem("linkCode");
+          let friend = true;
+          try { friend = (await liff.getFriendship()).friendFlag; } catch {}
+          box.innerHTML = `
+            <div class="center" style="font-size:3rem">${r.status === "approved" ? "✅" : "⏳"}</div>
+            <h2 class="center">${r.status === "approved" ? "เชื่อมต่ออยู่แล้ว" : "ส่งคำขอแล้ว"}</h2>
+            <p class="center">${r.status === "approved" ? "" : `ให้คุณ${esc(r.patientName)} กด <b>"อนุญาต"</b> ในแอป<br>หรือแจ้งนักกายภาพให้อนุมัติ`}</p>
+            ${!friend && cfg.addFriendUrl ? `<div class="note"><b>สำคัญ:</b> ต้องเพิ่มเพื่อนบัญชีแจ้งเตือนก่อน จึงจะได้รับข้อความ</div>
+              <a class="btn good xl block" href="${cfg.addFriendUrl}">➕ เพิ่มเพื่อน</a>` : ""}
+            <button class="btn ghost block" id="closeBtn">ปิด</button>`;
+          $("#closeBtn").onclick = () => (liff.isInClient() ? liff.closeWindow() : window.close());
+        } catch (e) {
+          fail(e.message);
+        }
+      };
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>หน้าหลัก — กายภาพ AI</title>
+  <meta name="theme-color" content="#0e6b66" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><img src="icons/icon-192.png" alt="" /><span id="appName">กายภาพ AI</span></div>
+    <button class="btn ghost sm" id="settingsBtn" aria-label="ตั้งค่า">⚙️</button>
+  </header>
+  <div id="demoBanner" class="demo-banner" hidden>โหมดทดลอง — ข้อมูลเก็บในเครื่องนี้เท่านั้น</div>
+
+  <main class="wrap stack">
+    <div>
+      <h1 id="hello">สวัสดีครับ</h1>
+      <div class="muted" id="today"></div>
+    </div>
+
+    <button class="btn primary block" id="installBtn" hidden>📲 ติดตั้งแอปลงหน้าจอ</button>
+
+    <section>
+      <div class="row between"><h2 style="margin:0">ท่าฝึกวันนี้</h2><span class="badge primary" id="doneBadge"></span></div>
+      <div id="plan" style="margin-top:12px"><div class="card muted">กำลังโหลด…</div></div>
+    </section>
+
+    <section class="card stack note-card" id="precBox" hidden></section>
+
+    <button class="btn danger xl block" id="sosBtn">🆘 ขอความช่วยเหลือ</button>
+
+    <section class="card stack">
+      <div class="row between"><h2 style="margin:0">ญาติที่รับแจ้งเตือน</h2></div>
+      <div id="family" class="muted">-</div>
+      <button class="btn primary block" id="linkBtn">➕ เชื่อมต่อญาติ (สแกน QR)</button>
+    </section>
+
+    <section class="card stack">
+      <h2 style="margin:0">ผลการฝึก 7 วัน</h2>
+      <div id="week" class="muted">-</div>
+    </section>
+  </main>
+  <script type="module" src="js/home.js"></script>
+</body>
+</html>

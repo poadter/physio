@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>ฝึกท่า — กายภาพ AI</title>
+  <meta name="theme-color" content="#0e6b66" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/app.css" />
+  <script src="config.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="btn ghost sm" id="backBtn" href="home.html">‹ กลับ</a>
+    <div class="brand"><span id="exTitle">ฝึกท่า</span></div>
+    <button class="btn ghost sm" id="voiceBtn" aria-label="เปิด/ปิดเสียง">🔊</button>
+  </header>
+  <div id="testBanner" class="demo-banner" hidden>โหมดทดลองท่า — ไม่บันทึกผล และไม่ส่ง LINE</div>
+
+  <main class="wrap">
+    <!-- 1. คำแนะนำ -->
+    <section id="sIntro" class="stack">
+      <div class="card stack note-card" id="precautions" hidden></div>
+      <div class="card stack">
+        <div class="row gap"><div class="ex-icon" id="exIcon"></div><div><h1 id="exName"></h1><div class="muted" id="exTarget"></div></div></div>
+        <div class="figure-box" id="introFig"></div>
+        <p id="exBenefit" class="muted"></p>
+        <div class="note"><b>📱 ตั้งกล้อง:</b> <span id="exSetup"></span></div>
+        <h3>วิธีทำ</h3>
+        <ol class="big-list" id="exSteps"></ol>
+        <div class="note">⚠️ หยุดทันทีถ้ารู้สึกเจ็บ เวียนศีรษะ หรือหายใจไม่ทัน และควรมีคนอยู่ใกล้ ๆ ขณะฝึก</div>
+      </div>
+      <div id="learnHint" class="note" hidden>ยังไม่เคยเรียนท่านี้ แนะนำให้กด <b>"เรียนท่านี้ก่อน"</b> ใช้เวลาประมาณ 2 นาที</div>
+      <button class="btn xl block" id="learnBtn">📖 เรียนท่านี้ก่อน</button>
+      <button class="btn primary xl block" id="startBtn">เริ่มฝึก</button>
+    </section>
+
+    <!-- 1b. เรียนท่า: ดูตัวอย่าง -->
+    <section id="sLearn" class="stack" hidden>
+      <div class="card stack">
+        <h2>ดูตัวอย่างท่า</h2>
+        <div class="figure-box" id="learnFig"></div>
+        <ol class="learn-steps" id="learnSteps"></ol>
+      </div>
+      <button class="btn ghost block" id="replayBtn">🔁 ฟังและดูอีกครั้ง</button>
+      <button class="btn primary xl block" id="tryBtn">📷 ลองทำตาม</button>
+      <p class="muted small center">ขั้นต่อไป AI จะช่วยดูว่าทำถูกไหม ทำถูก 3 ครั้งถือว่าผ่าน</p>
+    </section>
+
+    <!-- 2. ถามอาการก่อน/หลังฝึก -->
+    <section id="sPain" class="stack" hidden>
+      <div class="card stack">
+        <h2 id="painTitle">วันนี้รู้สึกอย่างไรบ้าง?</h2>
+        <div class="pain-choices">
+          <button class="btn good" data-pain="none"><span class="emo">😊</span> สบายดี ไม่มีอาการ</button>
+          <button class="btn" data-pain="mild" style="background:var(--warn-soft);color:var(--warn)"><span class="emo">😐</span> เจ็บ/ตึงเล็กน้อย</button>
+          <button class="btn danger" data-pain="severe"><span class="emo">😣</span> เจ็บมาก หรือ เวียนศีรษะ</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2a. สัญญาณเตือนโรคหลอดเลือดสมอง (เฉพาะผู้ป่วย stroke) -->
+    <section id="sWarn" class="stack" hidden>
+      <div class="card stack">
+        <h2>ก่อนฝึก มีอาการเหล่านี้ <u>เกิดขึ้นใหม่ทันที</u> ไหม?</h2>
+        <ul class="big-list warn-list">
+          <li>😶 หน้าเบี้ยว ปากเบี้ยว ยิ้มแล้วมุมปากไม่เท่ากัน</li>
+          <li>💪 แขนหรือขาอ่อนแรง ชา มากขึ้นกว่าเดิมทันที</li>
+          <li>🗣️ พูดไม่ชัด พูดไม่ออก หรือฟังไม่เข้าใจ</li>
+          <li>👁️ ตามองไม่เห็น เห็นภาพซ้อน เวียนศีรษะ เดินเซทันที</li>
+        </ul>
+        <button class="btn danger xl block" id="warnYes">🚨 มีอาการ</button>
+        <button class="btn good xl block" id="warnNo">ไม่มี เหมือนเดิม</button>
+      </div>
+    </section>
+
+    <!-- 3. ฝึก -->
+    <section id="sTrain" hidden>
+      <div class="stage" id="stage">
+        <video id="video" playsinline muted></video>
+        <canvas id="canvas"></canvas>
+        <div class="hud">
+          <div class="counter"><b id="repNow">0</b><small>จาก <span id="repGoal">10</span> ครั้ง</small></div>
+          <div class="setinfo" id="setInfo">เซต 1/1</div>
+        </div>
+        <div class="pip" id="pip" aria-hidden="true"></div>
+        <div class="gauge" aria-hidden="true"><i id="gaugeBar" style="height:0"></i><span class="target" id="gaugeTarget"></span></div>
+        <div class="debug" id="debug" hidden></div>
+        <div class="feedback" id="feedback">กำลังเตรียมกล้อง…</div>
+        <div class="loading-cover" id="loading">กำลังโหลด AI…<br /><small>ครั้งแรกอาจใช้เวลา 10–30 วินาที</small></div>
+      </div>
+      <div class="controls">
+        <button class="btn ghost" id="flipBtn">🔄 สลับกล้อง</button>
+        <button class="btn ghost" id="debugBtn">📐 ตัวเลข</button>
+      </div>
+      <button class="btn danger xl block" id="stopBtn" style="margin-top:12px">✋ หยุด</button>
+    </section>
+
+    <!-- 4. พักระหว่างเซต -->
+    <section id="sRest" class="stack center" hidden>
+      <div class="card stack">
+        <h2>พักก่อนนะครับ</h2>
+        <div class="code-big" id="restCount">30</div>
+        <p class="muted">เซตต่อไปจะเริ่มอัตโนมัติ</p>
+        <button class="btn primary block" id="skipRest">พร้อมแล้ว เริ่มเลย</button>
+        <button class="btn ghost block" id="endFromRest">พอแค่นี้</button>
+      </div>
+    </section>
+
+    <!-- 4b. ผลการเรียนท่า -->
+    <section id="sLearnDone" class="stack" hidden>
+      <div class="card stack center">
+        <div style="font-size:3rem" id="ldIcon">🎓</div>
+        <h1 id="ldTitle">ผ่านการเรียนท่าแล้ว!</h1>
+        <p id="ldText" class="muted"></p>
+        <div id="ldTips" class="note" hidden></div>
+      </div>
+      <button class="btn primary xl block" id="ldStart">เริ่มฝึกจริง</button>
+      <button class="btn ghost block" id="ldAgain">📖 เรียนอีกครั้ง</button>
+      <a class="btn ghost block" href="home.html" id="ldHome">กลับหน้าหลัก</a>
+    </section>
+
+    <!-- 5. สรุป -->
+    <section id="sDone" class="stack" hidden>
+      <div class="card stack center">
+        <div style="font-size:3rem">🎉</div>
+        <h1 id="doneTitle">เก่งมากครับ!</h1>
+        <div class="summary-nums">
+          <div><b id="sumReps">0</b><span class="muted">ครั้ง</span></div>
+          <div><b id="sumGood">0%</b><span class="muted">ทำถูก</span></div>
+          <div><b id="sumTime">0</b><span class="muted">นาที</span></div>
+        </div>
+        <div id="sumIssues" class="note" hidden></div>
+      </div>
+      <div id="saveState" class="muted center"></div>
+      <a class="btn primary xl block" href="home.html" id="doneHome">กลับหน้าหลัก</a>
+    </section>
+  </main>
+
+  <script type="module" src="js/exercise.js"></script>
+</body>
+</html>
